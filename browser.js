@@ -1,8 +1,10 @@
-function lightPowerIcon(enabled)
-{
-    chrome.action.setBadgeText({text: "+"});
-    var color = enabled ? "green" : "red";
-    chrome.action.setBadgeBackgroundColor({color: color});
+
+
+function lightPowerIcon(enabled) {
+  console.log(`STUB: lightPowerIcon(enabled)`);
+  //chrome.action.setBadgeText({text: "+"});
+  //var color = enabled ? "green" : "red";
+  //chrome.action.setBadgeBackgroundColor({color: color});
 }
 
 /*
@@ -15,6 +17,19 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
   }
 });
 */
+
+chrome = {};
+chrome.storage = {};
+chrome.storage.local = {};
+chrome.storage.local.set = function(key, value) {
+  console.log(`key=` + JSON.stringify(key));
+  console.log(`value=` + JSON.stringify(value));
+};
+
+chrome.storage.local.get = function(key, value) {
+  console.log(`key=` + JSON.stringify(key));
+  console.log(`value=` + JSON.stringify(value));
+};
 
 function saveSetting(settings)
 {
@@ -30,16 +45,16 @@ function saveSetting(settings)
         }
 
         chrome.storage.local.set({"options": options}, function() {
-            //console.log('Value is set to ' + JSON.stringify(options));
+          console.log('Value is set to ' + JSON.stringify(options));
         });
     });
 }
 
 function getSetting(key, fn)
 {
-    chrome.storage.local.get("options", (options) => {
-        //console.log('Value currently is ' + JSON.stringify(options));
-        fn(options[key]);
-    });
+  chrome.storage.local.get("options", (options) => {
+      console.log('Value currently is ' + JSON.stringify(options));
+      fn(options[key]);
+  });
 }
 
