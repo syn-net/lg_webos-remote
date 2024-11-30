@@ -1,9 +1,17 @@
+
+//`use strict`;
+
+//const EventEmitter = require('node:events');
+const EventEmitter = require('./EventEmitter.js');
+//import WebSocket from 'ws';
+const ws = require('ws');
+
 var handshaken = false;
 var eventemitter = new EventEmitter();
 
 // connection to TV
 var pointerSocket = null;
-var ws = null;
+//var ws = null;
 var wsurl = "ws://lgsmarttv.lan:3000";
 
 var isConnected;
@@ -27,12 +35,12 @@ var get_handshake = function(clientKey) {
 };
 
 // store the client key on disk so that we don't have to pair next time
-var store_client_key = function(key) {
+let store_client_key = function(key) {
     console.log("Storing client key:" + key);
     saveSetting({"clientKey": key});
 };
 
-var setupClient = function()
+let setupClient = function()
 {
     ws.onerror = function(event) {
         var error = event.data;
@@ -66,7 +74,7 @@ var setupClient = function()
     };
 };
 
-var ws_send = function(str){
+let ws_send = function(str){
     if (!isConnected) {
         console.log("ws_send: not connected");
         return false;
@@ -119,7 +127,7 @@ var send_command = function(prefix, msgtype, uri, payload, fn) {
     }
 };
 
-var open_connection = function(host, fn){
+open_connection = function(host, fn){
     console.log("connecting to ", host);
     try {
         ws = new WebSocket(host);
@@ -154,7 +162,7 @@ var _check_host_string = function(hoststr)
 
 // Connect to TV using either a host string (eg "192.168.1.213", "lgsmarttv.lan")
 // or undefined for using the default "lgsmarttv.lan"
-var connect = function(host, fn) {
+exports.connect = function(host, fn) {
     // if already connected, no need to connect again
     // (unless hostname is new, but this package is basically written for the usecase
     // of having a single TV on the LAN)
@@ -181,7 +189,7 @@ var connect = function(host, fn) {
         // provided host string is wrong, throw something
         // XXXX
     }
-
+    
     // open websocket connection and perform handshake
     open_connection(host, function(success, msg){
         if (success) {
@@ -212,7 +220,7 @@ var connect = function(host, fn) {
 };
 
 // show a float on the TV
-var unsubscribe = function(id, fn) {
+exports.unsubscribe = function(id, fn) {
     var msg = '{"id":"' + id + '","type":"unsubscribe"}';
     try {
         if (typeof fn === "function") {
@@ -235,22 +243,22 @@ var unsubscribe = function(id, fn) {
 };
 
 // show a toast on the TV
-var show_toast = function(text, fn) {
+exports.show_toast = function(text, fn) {
     send_command("", "request", "ssap://system.notifications/createToast", '{"message": "MSG"}'.replace('MSG', text), fn);
 };
 
-var get_foreground_app_info = function(fn)
+exports.get_foreground_app_info = function(fn)
 {
     send_command("test", "request", "ssap://com.webos.applicationManager/getForegroundAppInfo", null, fn);
 };
 
-var register_keyboard = function(fn)
+exports.register_keyboard = function(fn)
 {
     send_command("keyboard_", "subscribe", "ssap://com.webos.service.ime/registerRemoteKeyboard", null, fn);
 };
 
 // launch browser at URL; will open a new tab if already open
-var open_browser_at = function(url, fn) {
+exports.open_browser_at = function(url, fn) {
     // must start with http:// or https://
     console.log("opening browser at:%s", url);
     var protocol = url.substring(0, 7).toLowerCase();
@@ -270,11 +278,11 @@ var open_browser_at = function(url, fn) {
     });
 };
 
-var turn_off = function(fn) {
+exports.turn_off = function(fn) {
     send_command("", "request", "ssap://system/turnOff", null, fn);
 };
 
-var channellist = function(fn) {
+exports.channellist = function(fn) {
     send_command("channels_", "request", "ssap://tv/getChannelList", null, function(success, resp) {
         if (success) {
             try {
@@ -382,7 +390,7 @@ var set_input = function(input, fn) {
 };
 
 // get program info
-var get_program = function(fn) {
+exports.get_program = function(fn) {
     send_command("program_", "subscribe", "ssap://tv/getChannelCurrentProgramInfo", null, function(success, resp){
         if (!success) {
             fn(RESULT_ERROR, "error getting program");
@@ -449,56 +457,56 @@ var set_volume = function(volumelevel, fn) {
     }
 };
 
-var input_media_play = function(fn) {
+exports.input_media_play = function(fn) {
     send_command("", "request", "ssap://media.controls/play", null, fn);
 };
 
-var input_media_stop = function(fn) {
+exports.input_media_stop = function(fn) {
     send_command("", "request", "ssap://media.controls/stop", null, fn);
 };
 
-var input_media_pause = function(fn) {
+exports.input_media_pause = function(fn) {
     send_command("", "request", "ssap://media.controls/pause", null, fn);
 };
 
-var input_media_rewind = function(fn) {
+exports.input_media_rewind = function(fn) {
     send_command("", "request", "ssap://media.controls/rewind", null, fn);
 };
 
-var input_media_forward = function(fn) {
+exports.input_media_forward = function(fn) {
     send_command("", "request", "ssap://media.controls/fastForward", null, fn);
 };
 
-var input_channel_up = function(fn) {
+exports.input_channel_up = function(fn) {
     send_command("", "request", "ssap://tv/channelUp", null, fn);
 };
 
-var input_channel_down = function(fn) {
+exports.input_channel_down = function(fn) {
     send_command("", "request", "ssap://tv/channelDown", null, fn);
 };
 
-var input_three_d_on = function(fn) {
+exports.input_three_d_on = function(fn) {
     send_command("", "request", "ssap://com.webos.service.tv.display/set3DOn", null, fn);
 };
 
-var input_three_d_off = function(fn) {
+exports.input_three_d_off = function(fn) {
     send_command("", "request", "ssap://com.webos.service.tv.display/set3DOff", null, fn);
 };
 
-var three_d_status = function(fn) {
+exports.three_d_status = function(fn) {
     send_command("three_d_", "subscribe", "ssap://com.webos.service.tv.display/get3DStatus", null, fn);
 };
 
-var get_status = function(fn) {
+exports.get_status = function(fn) {
     send_command("status_", "request", "ssap://audio/getStatus", null, fn);
     // send_command("status_", "subscribe", "ssap://audio/getStatus", null, fn);
 };
 
-var sw_info = function(fn) {
+exports.sw_info = function(fn) {
     send_command("sw_info_", "request", "ssap://com.webos.service.update/getCurrentSWInformation", null, fn);
 };
 
-var init_pointer_socket = function(fn) {
+exports.init_pointer_socket = function(fn) {
     send_command("pointer_", "request", "ssap://com.webos.service.networkinput/getPointerInputSocket", null, function(success, response) {
         if (success && response.type != "error")
         {
@@ -512,14 +520,14 @@ var init_pointer_socket = function(fn) {
     });
 };
 
-var close_pointer_socket = function(fn) {
+exports.close_pointer_socket = function(fn) {
     if (pointerSocket)
     {
         pointerSocket.close();
     }
 };
 
-var pointer_button = function (keyName) {
+exports.pointer_button = function (keyName) {
     if (pointerSocket != null) {
         pointerSocket.send("type:button\n" + "name:" + keyName + "\n" + "\n");
     } else {
@@ -527,7 +535,7 @@ var pointer_button = function (keyName) {
     }
 };
 
-var pointer_move = function (dx, dy) {
+exports.pointer_move = function (dx, dy) {
     if (pointerSocket != null) {
         pointerSocket.send("type:move\n" + "dx:" + dx + "\n" + "dy:" + dy + "\n" + "down:0\n" + "\n");
     } else {
@@ -535,7 +543,7 @@ var pointer_move = function (dx, dy) {
     }
 };
 
-var pointer_drag = function (dx, dy, drag) {
+exports.pointer_drag = function (dx, dy, drag) {
     if (pointerSocket != null) {
         pointerSocket.send("type:move\n" + "dx:" + dx + "\n" + "dy:" + dy + "\n" + "down:" + (drag ? 1 : 0) + "\n" + "\n");
     } else {
@@ -543,7 +551,7 @@ var pointer_drag = function (dx, dy, drag) {
     }
 };
 
-var scroll = function(dx, dy) {
+exports.scroll = function(dx, dy) {
     if (pointerSocket != null) {
         pointerSocket.send("type:scroll\n" + "dx:" + dx + "\n" + "dy:" + dy + "\n" + "\n");
     } else {
@@ -551,7 +559,7 @@ var scroll = function(dx, dy) {
     }
 };
 
-var click = function() {
+exports.click = function() {
     if (pointerSocket != null) {
         pointerSocket.send("type:click\n" + "\n");
     } else {
@@ -559,7 +567,7 @@ var click = function() {
     }
 };
 
-var services = function(fn) {
+exports.services = function(fn) {
     send_command("services_", "request", "ssap://api/getServiceList", null, function(success, resp) {
         if (typeof fn === "function") {
             if (success) {
@@ -578,7 +586,7 @@ var services = function(fn) {
     });
 };
 
-var apps = function(fn) {
+exports.apps = function(fn) {
     send_command("launcher_", "request", "ssap://com.webos.applicationManager/listLaunchPoints", null, function(success, response) {
         if (typeof fn === "function") {
             if (success) {
@@ -606,11 +614,11 @@ var apps = function(fn) {
     });
 };
 
-var open_app_with_payload = function(payload, fn) {
+exports.open_app_with_payload = function(payload, fn) {
     send_command("", "request", "ssap://com.webos.applicationManager/launch", payload, null, fn);
 };
 
-var start_app = function(appid, fn) {
+exports.start_app = function(appid, fn) {
     send_command("", "request", "ssap://system.launcher/launch", JSON.stringify({id: appid}), function(success, resp){
         if (success) {
             if (resp.payload.errorCode) {
@@ -624,7 +632,7 @@ var start_app = function(appid, fn) {
     });
 };
 
-var close_app = function(appid, fn) {
+exports.close_app = function(appid, fn) {
     send_command("", "request", "ssap://system.launcher/close", JSON.stringify({id: appid}), function(success, resp){
         if (success) {
             if (resp.payload.errorCode) {
@@ -640,49 +648,49 @@ var close_app = function(appid, fn) {
     });
 };
 
-var input_pause = function(fn) {
+exports.input_pause = function(fn) {
     send_command("pause_", "request", "ssap://media.controls/pause", null, fn);
 };
 
-var input_play = function(fn) {
+exports.input_play = function(fn) {
     send_command("play_", "request", "ssap://media.controls/play", null, fn);
 };
 
-var input_stop = function(fn) {
+exports.input_stop = function(fn) {
     send_command("stop_", "request", "ssap://media.controls/stop", null, fn);
 };
 
-var input_volumeup = function(fn) {
+exports.input_volumeup = function(fn) {
     send_command("volumeup_", "request", "ssap://audio/volumeUp", null, fn);
 };
 
-var input_volumedown = function(fn) {
+exports.input_volumedown = function(fn) {
     send_command("volumedown_", "request", "ssap://audio/volumeDown", null, fn);
 };
 
-var replace_text = function(text, fn) {
+exports.replace_text = function(text, fn) {
     send_command("keyboard_", "request", "ssap://com.webos.service.ime/insertText", '{"text": "TEXT", "replace": true}'.replace('TEXT', text), fn);
 };
 
-var input_text = function(text, fn) {
+exports.input_text = function(text, fn) {
     send_command("keyboard_", "request", "ssap://com.webos.service.ime/insertText", '{"text": "TEXT", "replace": false}'.replace('TEXT', text), fn);
 };
 
-var input_backspace = function(count, fn) {
+exports.input_backspace = function(count, fn) {
     var c = count === undefined ? 1 : count;
     send_command("keyboard_", "request", "ssap://com.webos.service.ime/deleteCharacters", '{"count": COUNT}'.replace('COUNT', c.toString()), fn);
 };
 
-var input_enter = function(fn) {
+exports.input_enter = function(fn) {
     send_command("keyboard_", "request", "ssap://com.webos.service.ime/sendEnterKey", null, fn);
 };
 
-var open_youtube_at_id = function(video_id, fn) {
+exports.open_youtube_at_id = function(video_id, fn) {
     var vurl = "http://www.youtube.com/tv?v=" + video_id;
     open_youtube_at_url(vurl, fn);
 };
 
-var open_youtube_at_url = function(url, fn) {
+exports.open_youtube_at_url = function(url, fn) {
     var youtube_appid = "youtube.leanback.v4";
     var payload = {id: youtube_appid, params : {contentTarget: url}};
     send_command("", "request", "ssap://system.launcher/launch", JSON.stringify(payload), function(success, resp){
@@ -698,7 +706,7 @@ var open_youtube_at_url = function(url, fn) {
     });
 };
 
-var debugLog = function(err, response)
+exports.debugLog = function(err, response)
 {
     if (response)
     {
@@ -710,7 +718,7 @@ var debugLog = function(err, response)
     }
 };
 
-var handleKeyboard = function(event)
+exports.handleKeyboard = function(event)
 {
     var x = event.which || event.keyCode;
 

@@ -14,5 +14,8 @@
     "webapp"
   ],
   "author": "Jeffrey Carpenter",
-  "license": "BSD-2-Clause"
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
 }
