@@ -5,19 +5,26 @@
   "main": "index.mjs",
   "scripts": {
     "start": "node index.mjs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test:ws_server": "node tests/websockets/ws_server.js",
+    "test:ws_client": "node tests/websockets/ws_client.js",
+    "test": "echo STUB",
+    "dev": "echo STUB",
+    "lint:package": "cat package.json | jsonlint -",
+    "lint": "npm run-script lint:package"
   },
   "keywords": [
     "lg",
     "webos",
     "remote",
-    "webapp"
+    "webapp",
+    "chrome extension remake"
   ],
   "author": "Jeffrey Carpenter",
   "license": "BSD-2-Clause",
   "dependencies": {
     "jquery": "^3.7.1",
     "jscolor": "^0.3.0",
+    "jsonlint": "^1.6.3",
     "materialize-css": "^1.0.0",
     "websocket": "^1.0.35"
   }
