@@ -4,12 +4,16 @@ const assert = require('node:assert');
 //const EventEmitter = require('node:events');
 const EventEmitter = require('./EventEmitter.js');
 
+// IMPORTANT(JEFF): Omg, WebSockets is natively supported
+// by Node v22.x and is allegedly compatible with the browser
+// API. Let's try it out!
+
 // https://www.npmjs.com/package/websocket
 //import WebSocket from 'ws';
 //const ws = require('ws');
 
 // https://websockets.spec.whatwg.org//
-const ws = require('websocket').w3cwebsocket;
+//const ws = require('websocket').w3cwebsocket;
 // const ws = require('websocket').client;
 
 // IMPORTANT(JEFF): This should never assert until we have
@@ -23,6 +27,8 @@ assert.notEqual(eventemitter, null);
 
 // connection to TV
 var pointerSocket = null;
+var ws = null;
+//assert.notEqual(ws, null);
 let wsurl = "ws://lgsmarttv.lan:3000";
 
 let isConnected = false;
@@ -117,8 +123,6 @@ const hello_w_key=`{
   },
   "type" : "register"
 }`
-
-assert.notEqual(ws, null); //var ws = null;
 
 // get the handshake string used for setting up the ws connection
 var get_handshake = function(clientKey) {
