@@ -19,7 +19,6 @@
     "jquery": "^3.7.1",
     "jscolor": "^0.3.0",
     "materialize-css": "^1.0.0",
-    "websocket": "^1.0.35",
-    "ws": "^8.18.0"
+    "websocket": "^1.0.35"
   }
 }
