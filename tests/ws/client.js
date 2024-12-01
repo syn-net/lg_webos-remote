@@ -1,8 +1,9 @@
-var W3CWebSocket = require('websocket').w3cwebsocket;
+// var W3CWebSocket = require('websocket').w3cwebsocket;
 let HOST = `localhost`;
 let PORT = 3000;
 let wsurl = `ws://${HOST}:${PORT}`;
-var client = new W3CWebSocket(wsurl, `echo-protocol`);
+var client = new WebSocket(wsurl, `echo-protocol`);
+// var client = new W3CWebSocket(wsurl, `echo-protocol`);
 
 client.onerror = function() {
     console.log('Connection Error');

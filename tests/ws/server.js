@@ -2,8 +2,8 @@
 // https://stackoverflow.com/questions/61755518/is-it-possible-to-have-a-node-js-websocket-client
 
 // TODO(JEFF): This should be the w3cwebsocket variant
-// const WebSocketServer = require('websocket').w3cwebsocket;
-var WebSocketServer = require('websocket').server;
+const WebSocketServer = require('websocket').w3cwebsocket;
+// var WebSocketServer = require('websocket').server;
 var http = require('node:http');
 
 const PORT = 3000;
