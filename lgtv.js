@@ -1,26 +1,124 @@
 
 //`use strict`;
-
+const assert = require('node:assert');
 //const EventEmitter = require('node:events');
 const EventEmitter = require('./EventEmitter.js');
-//import WebSocket from 'ws';
-const ws = require('ws');
 
-var handshaken = false;
-var eventemitter = new EventEmitter();
+// https://www.npmjs.com/package/websocket
+//import WebSocket from 'ws';
+//const ws = require('ws');
+
+// https://websockets.spec.whatwg.org//
+const ws = require('websocket').w3cwebsocket;
+// const ws = require('websocket').client;
+
+// IMPORTANT(JEFF): This should never assert until we have
+// begun testing inside a browser!
+assert.notEqual(ws,
+  typeof window === "function" && window.WebSocket);
+
+let handshaken = false;
+let eventemitter = new EventEmitter();
+assert.notEqual(eventemitter, null);
 
 // connection to TV
 var pointerSocket = null;
-//var ws = null;
-var wsurl = "ws://lgsmarttv.lan:3000";
+let wsurl = "ws://lgsmarttv.lan:3000";
 
-var isConnected;
+let isConnected = false;
 
 // bool for callbacks
-var RESULT_ERROR = false;
-var RESULT_OK = true;
+const RESULT_ERROR = false;
+const RESULT_OK = true;
 
-var hello_w_key='{"type":"register","id":"register_0","payload":{"forcePairing":false,"pairingType":"PROMPT","client-key":"CLIENTKEYGOESHERE","manifest":{"manifestVersion":1,"appVersion":"1.1","signed":{"created":"20140509","appId":"com.lge.test","vendorId":"com.lge","localizedAppNames":{"":"LG Remote App","ko-KR":"리모컨 앱","zxx-XX":"ЛГ Rэмotэ AПП"},"localizedVendorNames":{"":"LG Electronics"},"permissions":["TEST_SECURE","CONTROL_INPUT_TEXT","CONTROL_MOUSE_AND_KEYBOARD","READ_INSTALLED_APPS","READ_LGE_SDX","READ_NOTIFICATIONS","SEARCH","WRITE_SETTINGS","WRITE_NOTIFICATION_ALERT","CONTROL_POWER","READ_CURRENT_CHANNEL","READ_RUNNING_APPS","READ_UPDATE_INFO","UPDATE_FROM_REMOTE_APP","READ_LGE_TV_INPUT_EVENTS","READ_TV_CURRENT_TIME"],"serial":"2f930e2d2cfe083771f68e4fe7bb07"},"permissions":["LAUNCH","LAUNCH_WEBAPP","APP_TO_APP","CLOSE","TEST_OPEN","TEST_PROTECTED","CONTROL_AUDIO","CONTROL_DISPLAY","CONTROL_INPUT_JOYSTICK","CONTROL_INPUT_MEDIA_RECORDING","CONTROL_INPUT_MEDIA_PLAYBACK","CONTROL_INPUT_TV","CONTROL_POWER","READ_APP_STATUS","READ_CURRENT_CHANNEL","READ_INPUT_DEVICE_LIST","READ_NETWORK_STATE","READ_RUNNING_APPS","READ_TV_CHANNEL_LIST","WRITE_NOTIFICATION_TOAST","READ_POWER_STATE","READ_COUNTRY_INFO"],"signatures":[{"signatureVersion":1,"signature":"eyJhbGdvcml0aG0iOiJSU0EtU0hBMjU2Iiwia2V5SWQiOiJ0ZXN0LXNpZ25pbmctY2VydCIsInNpZ25hdHVyZVZlcnNpb24iOjF9.hrVRgjCwXVvE2OOSpDZ58hR+59aFNwYDyjQgKk3auukd7pcegmE2CzPCa0bJ0ZsRAcKkCTJrWo5iDzNhMBWRyaMOv5zWSrthlf7G128qvIlpMT0YNY+n/FaOHE73uLrS/g7swl3/qH/BGFG2Hu4RlL48eb3lLKqTt2xKHdCs6Cd4RMfJPYnzgvI4BNrFUKsjkcu+WD4OO2A27Pq1n50cMchmcaXadJhGrOqH5YmHdOCj5NSHzJYrsW0HPlpuAx/ECMeIZYDh6RMqaFM2DXzdKX9NmmyqzJ3o/0lkk/N97gfVRLW5hA29yeAwaCViZNCP8iC9aO0q9fQojoa7NQnAtw=="}]}}}';
+// NOTE(JEFF): This object is only used in the NodeJS port of WebSockets.
+//
+// TODO(JEFF): Add this to the requestOptions object of the WebSocket connection handler
+//
+// 1. https://github.com/theturtle32/WebSocket-Node/blob/d87afb7ef28f9c2249aa764805af87846d46f522/docs/WebSocketClient.md
+const requestOptions = {
+    // TODO(JEFF): Verify that this is the correct origin
+    origin: `chrome:///extensions`,
+    agent: `Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36`,
+};
+
+const hello_w_key=`{
+    "id" : "register_0",
+    "payload" : {      
+    "client-key" : "CLIENTKEYGOESHERE",
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAja9OJLlg3FnIFOq/tgCB7qoDuMspUrJ3c34BEJU3qmshI45sBxhmjFQSgdsKek/5zYpQkdV1JxZD0mmqjdoQ/EkswH94HmjS9gv1WNc/Kimwxlv9+b0fDGoDmHsqKuIdfSASCGsa4JErrfyjqBUoErCeNjFlnnIit6BvsJqkQaejsejPg/ICbis2GgojbTAKwkvIhPTDxvhnY6CGmHVkBkmOBaFoGIpOyMvCc3CO65YcdfEMaM9SaafbFXNky07msJhBK4G2iPWHk5059+fGBFcRajd0pVRgYAKZJjtCjdx9dRCkScPBKn2PA3qKDZRUlDpy4pVmsDn3+GIe6bfs0QIDAQAB",
+    "forcePairing" : false,
+    "manifest" : {
+      "appVersion" : "1.1",
+       "manifestVersion" : 1,
+       "permissions" : [
+        "LAUNCH",
+        "LAUNCH_WEBAPP",
+        "APP_TO_APP",
+        "CLOSE",
+        "TEST_OPEN",
+        "TEST_PROTECTED",
+        "CONTROL_AUDIO",
+        "CONTROL_DISPLAY",
+        "CONTROL_INPUT_JOYSTICK",
+        "CONTROL_INPUT_MEDIA_RECORDING",
+        "CONTROL_INPUT_MEDIA_PLAYBACK",
+        "CONTROL_INPUT_TV",
+        "CONTROL_POWER",
+        "READ_APP_STATUS",
+        "READ_CURRENT_CHANNEL",
+        "READ_INPUT_DEVICE_LIST",
+        "READ_NETWORK_STATE",
+        "READ_RUNNING_APPS",
+        "READ_TV_CHANNEL_LIST",
+        "WRITE_NOTIFICATION_TOAST",
+        "READ_POWER_STATE",
+        "READ_COUNTRY_INFO"
+    ],
+    "signatures" : [
+    {
+        "signature" : "eyJhbGdvcml0aG0iOiJSU0EtU0hBMjU2Iiwia2V5SWQiOiJ0ZXN0LXNpZ25pbmctY2VydCIsInNpZ25hdHVyZVZlcnNpb24iOjF9.hrVRgjCwXVvE2OOSpDZ58hR+59aFNwYDyjQgKk3auukd7pcegmE2CzPCa0bJ0ZsRAcKkCTJrWo5iDzNhMBWRyaMOv5zWSrthlf7G128qvIlpMT0YNY+n/FaOHE73uLrS/g7swl3/qH/BGFG2Hu4RlL48eb3lLKqTt2xKHdCs6Cd4RMfJPYnzgvI4BNrFUKsjkcu+WD4OO2A27Pq1n50cMchmcaXadJhGrOqH5YmHdOCj5NSHzJYrsW0HPlpuAx/ECMeIZYDh6RMqaFM2DXzdKX9NmmyqzJ3o/0lkk/N97gfVRLW5hA29yeAwaCViZNCP8iC9aO0q9fQojoa7NQnAtw==",
+        "signatureVersion" : 1
+    }],
+    "signed" : {
+        "appId" : "com.lge.test",
+        "created" : "20140509",
+        "localizedAppNames" : {
+            "" : "LG Remote App",
+            "ko-KR" : "리모컨 앱",
+            "zxx-XX" : "ЛГ Rэмotэ AПП"
+        },
+        "localizedVendorNames" : {
+            "" : "LG Electronics"
+        },
+        "permissions" : [
+            "TEST_SECURE",
+            "CONTROL_INPUT_TEXT",
+            "CONTROL_MOUSE_AND_KEYBOARD",
+            "READ_INSTALLED_APPS",
+            "READ_LGE_SDX",
+            "READ_NOTIFICATIONS",
+            "SEARCH",
+            "WRITE_SETTINGS",
+            "WRITE_NOTIFICATION_ALERT",
+            "CONTROL_POWER",
+            "READ_CURRENT_CHANNEL",
+            "READ_RUNNING_APPS",
+            "READ_UPDATE_INFO",
+            "UPDATE_FROM_REMOTE_APP",
+            "READ_LGE_TV_INPUT_EVENTS",
+            "READ_TV_CURRENT_TIME"
+        ],
+        "serial" : "2f930e2d2cfe083771f68e4fe7bb07",
+        "vendorId" : "com.lge"
+      }
+    },
+    "pairingType" : "PROMPT"
+  },
+  "type" : "register"
+}`
+
+assert.notEqual(ws, null); //var ws = null;
 
 // get the handshake string used for setting up the ws connection
 var get_handshake = function(clientKey) {
@@ -48,7 +146,7 @@ let setupClient = function()
         // failed to connect, set timer to retry in a few seconds
         console.log("Connect Error: " + error);
     };
-
+    assert.notEqual(ws.url, null);
     ws.onopen = function(event) {
         console.log("LG TV Client Connected: ", ws.url);
         isConnected = true;
@@ -130,6 +228,7 @@ var send_command = function(prefix, msgtype, uri, payload, fn) {
 open_connection = function(host, fn){
     console.log("connecting to ", host);
     try {
+        // ws = new WebSocket(host, `echo-protocol`);
         ws = new WebSocket(host);
         setupClient();
         fn(RESULT_OK, {});
@@ -184,7 +283,7 @@ exports.connect = function(host, fn) {
     }
 
     host = _check_host_string(host);
-
+    
     if (host === false) {
         // provided host string is wrong, throw something
         // XXXX
