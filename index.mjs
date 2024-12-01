@@ -28,22 +28,26 @@ const {
 
 let port = 3000;
 let host = `ws://192.168.15.128:` + port; // `ws://lg-tv.lan`
+let hostTest = `ws://localhost:` + port; // `ws://lg-tv.lan`
 let options = {
-  host: host,
   deviceIp: host,
+  // deviceIp: hostTest,
 };
 
-chrome.storage.local.set("options", options);
-chrome.storage.local.get("options");
+async function main() {
+  chrome.storage.local.set("options", options);
 
+  let err = function(key, value) {
+    console.log(key, value);
+  };
 
-let err = function(key, value) {
-  console.log(key, value);
-};
+  await connect(options.deviceIp, exports.get_status);
+  //chrome.storage.local.get("options");
+  await sw_info(exports.get_status);
 
-connect(host, exports.get_status);
-//chrome.storage.local.get("options");
-sw_info(exports.get_status);
+  chrome.storage.local.get("options", options);
+}
 
+await main();
 process.exit(0);
 
