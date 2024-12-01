@@ -1,5 +1,11 @@
+
+# build and dist serve the same purpose
 build/
+!build/.placeholder
+
+!dist/.placeholder
 dist/
+
 node_modules/
 source/
 tmp/
