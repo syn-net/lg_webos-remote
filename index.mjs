@@ -1,8 +1,7 @@
 `use strict`
 
-import './browser.js';
-
-import exports from  './lgtv.js';
+import './src/js/browser.js';
+import exports from  './src/js/lgtv.js';
 const {
   connect,
   open_connection,

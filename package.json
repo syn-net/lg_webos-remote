@@ -4,10 +4,9 @@
   "description": "LG WebOS remote",
   "scripts": {
     "start": "node index.mjs",
-    "test:ws_server": "node tests/websockets/ws_server.js",
-    "test:ws_client": "node tests/websockets/ws_client.js",
-    "test": "echo STUB",
-    "dev": "echo STUB",
+    "test:ws:server": "node tests/ws/server.js",
+    "test:ws:client": "node tests/ws/client.js",
+    "test": "npm run-script test:ws:server & npm run-script test:ws:client",
     "lint:package": "cat package.json | jsonlint -",
     "lint": "npm run-script lint:package"
   },
