@@ -2,9 +2,8 @@
   "name": "lg-webos-remote",
   "version": "0.0.1",
   "description": "LG WebOS remote",
-  "type": "module",
   "scripts": {
-    "start": "node index.js",
+    "start": "node index.mjs",
     "test:ws_server": "node tests/websockets/ws_server.js",
     "test:ws_client": "node tests/websockets/ws_client.js",
     "test": "echo STUB",
