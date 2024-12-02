@@ -1,4 +1,6 @@
 
+.parcel-cache/
+
 # build and dist serve the same purpose
 build/
 !build/.placeholder
