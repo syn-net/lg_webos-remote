@@ -2,9 +2,9 @@
   "name": "lg-webos-remote",
   "version": "0.0.1",
   "description": "LG WebOS remote",
-  "main": "index.mjs",
+  "type": "module",
   "scripts": {
-    "start": "node index.mjs",
+    "start": "node index.js",
     "test:ws_server": "node tests/websockets/ws_server.js",
     "test:ws_client": "node tests/websockets/ws_client.js",
     "test": "echo STUB",
@@ -26,6 +26,7 @@
     "jscolor": "^0.3.0",
     "jsonlint": "^1.6.3",
     "materialize-css": "^1.0.0",
+    "parcel": "^2.13.2",
     "websocket": "^1.0.35"
   }
 }
