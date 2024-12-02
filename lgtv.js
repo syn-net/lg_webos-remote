@@ -1,8 +1,8 @@
 
 //`use strict`;
 const assert = require('node:assert');
-//const EventEmitter = require('node:events');
-const EventEmitter = require('./EventEmitter.js');
+const EventEmitter = require('node:events');
+// const EventEmitter = require('./EventEmitter.js');
 
 // IMPORTANT(JEFF): Omg, WebSockets is natively supported
 // by Node v22.x and is allegedly compatible with the browser
@@ -48,7 +48,8 @@ const requestOptions = {
     agent: `Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36`,
 };
 
-const hello_w_key=`{
+const hello_w_key=`
+{
     "id" : "register_0",
     "payload" : {      
     "client-key" : "CLIENTKEYGOESHERE",
@@ -122,7 +123,8 @@ const hello_w_key=`{
     "pairingType" : "PROMPT"
   },
   "type" : "register"
-}`
+}
+`;
 
 // get the handshake string used for setting up the ws connection
 var get_handshake = function(clientKey) {
@@ -478,7 +480,7 @@ var inputlist = function(fn) {
 };
 
 // set input source
-var set_input = function(input, fn) {
+exports.set_input = function(input, fn) {
     send_command("", "request", "ssap://tv/switchInput", JSON.stringify({inputId: input}), function(success, resp){
         if (!success) {
             fn(RESULT_ERROR, resp);
@@ -504,7 +506,7 @@ exports.get_program = function(fn) {
 };
 
 // get system info
-var system_info = function(fn) {
+exports.system_info = function(fn) {
     send_command("sysinfo_", "request", "ssap://system/getSystemInfo", null, function(success, resp){
         if (!success) {
             fn(RESULT_ERROR, "error getting system info");
@@ -515,7 +517,7 @@ var system_info = function(fn) {
 };
 
 // set mute
-var set_mute = function(setmute, fn) {
+exports.set_mute = function(setmute, fn) {
     if(typeof setmute !== "boolean") {
         fn(RESULT_ERROR, {reason: "mute must be boolean"});
     } else {
@@ -523,7 +525,7 @@ var set_mute = function(setmute, fn) {
     }
 };
 
-var muted = function(fn) {
+exports.muted = function(fn) {
     send_command("status_", "subscribe", "ssap://audio/getMute", null, function(success, response){
         if (success) {
             fn(RESULT_OK, response.payload.mute);
@@ -534,7 +536,7 @@ var muted = function(fn) {
 };
 
 // get volume as 0..100 if not muted, if muted then volume is -1
-var volume = function(fn) {
+exports.volume = function(fn) {
     send_command("volume_status_", "subscribe", "ssap://audio/getVolume", null, function(success, response){
         if (success) {
             if ("volumeStatus" in response.payload) {
@@ -548,7 +550,7 @@ var volume = function(fn) {
     });
 };
 
-var set_volume = function(volumelevel, fn) {
+exports.set_volume = function(volumelevel, fn) {
     if (typeof volumelevel !== "number") {
         fn(RESULT_ERROR, "volume must be a number");
 
@@ -640,7 +642,7 @@ exports.pointer_button = function (keyName) {
 
 exports.pointer_move = function (dx, dy) {
     if (pointerSocket != null) {
-        pointerSocket.send("type:move\n" + "dx:" + dx + "\n" + "dy:" + dy + "\n" + "down:0\n" + "\n");
+        exports.pointerSocket.send("type:move\n" + "dx:" + dx + "\n" + "dy:" + dy + "\n" + "down:0\n" + "\n");
     } else {
         console.log("pointerSocket is not connected");
     }
