@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 // https://stackoverflow.com/questions/61755518/is-it-possible-to-have-a-node-js-websocket-client
 
-// TODO(JEFF): This should be the w3cwebsocket variant
-const WebSocketServer = require('websocket').w3cwebsocket;
-// var WebSocketServer = require('websocket').server;
+// TODO(JEFF): We should re-write this script to use NodeJS native HTTP/2 
+// and its ability to setup a WebSockets compatible server without any
+// external library support; NodeJS as of v21.x onwards has a 
+// browser-compatible WebSockets API built-in.
+var WebSocketServer = require('websocket').server;
 var http = require('node:http');
 
 const PORT = 3000;

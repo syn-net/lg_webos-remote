@@ -2,11 +2,12 @@
   "name": "lg-webos-remote",
   "version": "0.0.1",
   "description": "LG WebOS remote",
+  "main": "index.mjs",
   "scripts": {
     "start": "node index.mjs",
     "test:ws:server": "node tests/ws/server.js",
     "test:ws:client": "node tests/ws/client.js",
-    "test": "npm run-script test:ws:server & npm run-script test:ws:client",
+    "test": "npm-run-all -p --race --print-name test:ws:server -s test:ws:client",
     "lint:package": "cat package.json | jsonlint -",
     "lint": "npm run-script lint:package"
   },
@@ -19,12 +20,19 @@
   ],
   "author": "Jeffrey Carpenter",
   "license": "BSD-2-Clause",
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  },
   "dependencies": {
     "jquery": "^3.7.1",
     "jscolor": "^0.3.0",
     "jsonlint": "^1.6.3",
     "materialize-css": "^1.0.0",
+    "npm-run-all": "^4.1.5",
     "parcel": "^2.13.2",
     "websocket": "^1.0.35"
+  },
+  "directories": {
+    "lib": "src/js"
   }
 }
