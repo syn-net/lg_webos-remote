@@ -9,6 +9,6 @@ build/
 dist/
 
 node_modules/
-source/
+!source/
 !source.zip
-tmp/
+tmp
