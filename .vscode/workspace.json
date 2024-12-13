@@ -1,0 +1,40 @@
+{
+    "tabs": [
+      {
+        "type": "file",
+        "uri": "src/options.html",
+        "viewColumn": 1,
+        "active": true
+      },
+      {
+        "type": "file",
+        "uri": "src/index.html",
+        "viewColumn": 1,
+        "active": true
+      },
+      {
+        "type": "browser",
+        "uri": "https://virgo.home",
+        "name": "dev"
+      },
+    //   {
+    //     "type": "terminal",
+    //     "name": "term1", 
+    //     "command": "ls dist", 
+    //     "viewColumn": 1, 
+    //     "location": "editor", 
+    //     "env": {"HOME": "/home/jeff"},
+    //     "cwd": "/home/jeff"
+    //   },
+      {
+        "type": "terminal", 
+        "name": "term2", 
+        "command": "ls -la dist/", 
+        "viewColumn": 1, 
+        "location": "panel"
+      }
+    ],
+    "closeUnmanagedTabs": true,
+    "closeUnmanagedTerminals": true
+  }
+  

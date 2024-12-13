@@ -2,7 +2,28 @@
 	"folders": [
 		{
 			"path": "."
-		}
+		},
+    {
+      "path": "source"
+    },
+    {
+      "path": "dist"
+    }
 	],
-	"settings": {}
+  "settings": {
+    "editor.tabSize": 4,
+    "editor.renderWhitespace": "all",
+    "editor.cursorStyle": "block",
+    "files.exclude": {
+      "**/node_modules": true
+    },
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 2500,
+    "files.autoSaveWhenNoErrors": false,
+    "files.autoSaveWorkspaceFilesOnly": false,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      
+    }
+  }
 }
