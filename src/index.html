@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head><title>LGTV Magic Remote Experimental Feature Page</title></head>
-<link rel="stylesheet" type="text/css" href="../source/css/magicremote.css"/>
+<link rel="stylesheet" type="text/css" href="/dist/css/magicremote.css" />
 <body>
 <div id="topmost_div">
-<img id="tvicon" src="../source/icons/tv.png"/>
+<img id="tvicon" src="/dist/icons/tv.png" />
 <span id="magicRemoteTitle"></span>
 <br>
 <br>
@@ -15,13 +15,13 @@
 <div id="hint">
 <table>
 <tr>
-<td><img class="help_image" src="../source/icons/key_home.png"></td>
-<td><img class="help_image" src="../source/icons/key_end.png"></td>
-<td><img class="help_image" src="../source/icons/key_arrow_left.png">
-<td><img class="help_image" src="../source/icons/key_arrow_up.png"></td>
-<td><img class="help_image" src="../source/icons/key_arrow_down.png"></td>
-<td><img class="help_image" src="../source/icons/key_arrow_right.png"></td>
-<td><img class="help_image" src="../source/icons/key_enter.png"></td>
+<td><img class="help_image" src="/dist/icons/key_home.png"></td>
+<td><img class="help_image" src="/dist/icons/key_end.png"></td>
+<td><img class="help_image" src="/dist/icons/key_arrow_left.png">
+<td><img class="help_image" src="/dist/icons/key_arrow_up.png"></td>
+<td><img class="help_image" src="/dist/icons/key_arrow_down.png"></td>
+<td><img class="help_image" src="/dist/icons/key_arrow_right.png"></td>
+<td><img class="help_image" src="/dist/icons/key_enter.png"></td>
 </tr>
 </table>
 <p>
@@ -29,13 +29,15 @@
 </p>
 </div>
 </div>
-<script type="text/javascript" src="../source/js/browser.js"></script>
+<script type="module" src="/src/js/browser.js">
+</script>
+<!--<script type="text/javascript" src="./js/browser.js"></script>-->
 <!--
-<script type="text/javascript" src="js/EventEmitter.js"></script>
+<script type="text/javascript" src="/js/EventEmitter.js"></script>
 -->
-<script type="text/javascript" src="../source/js/jquery-3.6.0.min.js"></script>
-<script type="module" src="../source/js/lgtv.js" charset="utf-8"></script>
-<script type="module" src="../source/js/magicremote.js"></script>
+<script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
+<script type="module" src="./js/lgtv.js" charset="utf-8"></script>
+<!--<script type="module" src="/js/magicremote.js"></script>-->
 
 </body>
 </html>

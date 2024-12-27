@@ -1,17 +1,35 @@
 {
+  "engines": {
+    "node": "^22 || ^18",
+    "npm": ">=8",
+    "yarn": "^1.22"
+  },
+  "private": true,
+  "workspaces": [
+    "src/*"
+  ],
   "name": "lg-webos-remote",
   "version": "0.0.1",
   "description": "LG WebOS remote",
   "type": "module",
   "scripts": {
-    "build:webextension": "parcel build source/manifest.json",
-    "build": "parcel src/index.html source/js/* source/css/* source/icons/*",
+    "build:webextension": "parcel build source/manifest.json --cache-dir=./node_modules/.cache",
+    "build:dist": "npm-run-all -s clean; parcel src/options.html --dist-dir ./dist/ --cache-dir=./node_modules/.cache",
+    "build:cert": "scripts/certificate.bash",
+    "build:dist:dev": "HOST=$HOST parcel serve src/options.html --port 443 --host=$HOST --https --cert config/tls.crt --key config/tls.key --open --cache-dir=./node_modules/.cache --lazy",
+    "build:new": "parcel src/options.html src/js/*.js src/css/* src/icons/*.png --cache-dir=./node_modules/.cache",
+    "build:oldext": "parcel src/js/browser.js source/options.html src/js/* source/css/* source/icons/* --cache-dir=./node_modules/.cache",
+    "build:newext": "parcel src/index.html src/css/* src/icons/* --cache-dir ./node_modules/.cache",
     "start": "node index.mjs",
     "test:ws:server": "node tests/ws/server.js",
     "test:ws:client": "node tests/ws/client.js",
     "test": "npm-run-all -p --race --print-name test:ws:server -s test:ws:client",
     "lint:package": "cat package.json | jsonlint -",
-    "lint": "npm run-script lint:package"
+    "lint:locales": "cat src/_locales/en/*.json | jsonlint -",
+    "lint": "npm-run-all -p lint:*",
+    "clean": "npm-run-all -p clean:*",
+    "clean:all": "shx rm -f dist/*",
+    "clean:caches": "shx rm -f .parcel-cache/* node_modules/.cache/*"
   },
   "keywords": [
     "lg",
@@ -25,14 +43,22 @@
   "devDependencies": {
     "@parcel/config-webextension": "^2.13.2",
     "@parcel/service-worker": "^2.13.2",
+    "assert": "^2.1.0",
+    "events": "^3.3.0",
     "npm-run-all": "^4.1.5",
+    "process": "^0.11.10",
+    "shx": "^0.3.4",
+    "stream-browserify": "^3.0.0",
     "websocket": "^1.0.35"
   },
   "dependencies": {
     "jquery": "^3.7.1",
     "jscolor": "^0.3.0",
     "jsonlint": "^1.6.3",
-    "materialize-css": "^1.0.0"
+    "materialize-css": "^1.0.0",
+    "moca": "^0.4.3",
+    "parcel": "^2.13.2",
+    "webextension-polyfill": "^0.12"
   },
   "directories": {
     "lib": "src/js"

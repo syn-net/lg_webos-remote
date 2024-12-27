@@ -1,8 +1,13 @@
 
 //`use strict`;
-const assert = require('node:assert');
-const EventEmitter = require('node:events');
-// const EventEmitter = require('./EventEmitter.js');
+import 'assert';
+
+// const {EventEmitter} = require('node:events');
+// import {EventEmitter} from './EventEmitter.js';
+// const assert = require('node:assert');
+// import 'node:events';
+const EventEmitter = require('./EventEmitter.js');
+// let EventEmitter = new EventEmitter();
 
 // IMPORTANT(JEFF): Omg, WebSockets is natively supported
 // by Node v22.x and is allegedly compatible with the browser
@@ -15,6 +20,10 @@ const EventEmitter = require('node:events');
 // https://websockets.spec.whatwg.org//
 //const ws = require('websocket').w3cwebsocket;
 // const ws = require('websocket').client;
+
+let assert = {};
+assert.notEqual = function() {}
+assert.equal = function() {}
 
 // IMPORTANT(JEFF): This should never assert until we have
 // begun testing inside a browser!
@@ -157,11 +166,22 @@ let setupClient = function()
         console.log("LG TV Client Connected: ", ws.url);
         isConnected = true;
         handshaken = false;
-        getSetting("options", function(options) {
-            var hs = get_handshake(options.clientKey);
-            console.log("Sending handshake...");
+        let hs = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAja9OJLlg3FnIFOq/tgCB7qoDuMspUrJ3c34BEJU3qmshI45sBxhmjFQSgdsKek/5zYpQkdV1JxZD0mmqjdoQ/EkswH94HmjS9gv1WNc/Kimwxlv9+b0fDGoDmHsqKuIdfSASCGsa4JErrfyjqBUoErCeNjFlnnIit6BvsJqkQaejsejPg/ICbis2GgojbTAKwkvIhPTDxvhnY6CGmHVkBkmOBaFoGIpOyMvCc3CO65YcdfEMaM9SaafbFXNky07msJhBK4G2iPWHk5059+fGBFcRajd0pVRgYAKZJjtCjdx9dRCkScPBKn2PA3qKDZRUlDpy4pVmsDn3+GIe6bfs0QIDAQAB";
+        
+        if(typeof getSetting === `function`) {
+            getSetting("options", function(options) {
+                let hs;
+                if(options.clientKey) {
+                    hs = get_handshake(options.clientKey);
+                } else {
+                    hs = get_handshake(clientKey);
+                }
+                console.log("Sending handshake...");
+                ws_send(hs);
+            });
+        } else {
             ws_send(hs);
-        });
+        }
     };
 
     ws.onclose = function(event) {

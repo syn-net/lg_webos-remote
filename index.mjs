@@ -1,6 +1,6 @@
 `use strict`
 
-import './src/js/browser.js';
+import {env} from './src/js/browser.js';
 import exports from  './src/js/lgtv.js';
 const {
   connect,
